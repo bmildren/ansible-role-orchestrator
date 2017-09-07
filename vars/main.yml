@@ -1,0 +1,280 @@
+---
+### Orchestrator required packages
+orchestrator_repos:
+  - deb https://packagecloud.io/github/orchestrator/ubuntu {{ ansible_lsb.codename }} main
+  - deb-src https://packagecloud.io/github/orchestrator/ubuntu {{ ansible_lsb.codename }} main
+
+orchestrator_packages:
+  - orchestrator
+  - orchestrator-cli
+
+orchestrator_install_dir: "{{ orchestrator_home_dir }}/orchestrator-{{ orchestrator_version }}"
+
+orchestrator_src: "{{ orchestrator_download_src }}/v{{ orchestrator_version }}/orchestrator-{{ orchestrator_version }}-linux-amd64.tar.gz"
+
+orchestrator_installed_file: "{{ orchestrator_install_dir }}_installed"
+
+### Orchestrator config dicts
+orchestrator_general_options:
+  general_option_debug:
+    variable: "Debug"
+    variable_value: "{{ orchestrator_debug }}"
+  general_option_listen_address:
+    variable: "ListenAddress"
+    variable_value: "{{ orchestrator_listen_address }}"
+  general_option_listen_socket:
+    variable: "ListenSocket"
+    variable_value: "{{ orchestrator_listen_socket }}"
+  general_option_url_prefix:
+    variable: "URLPrefix"
+    variable_value: "{{ orchestrator_url_prefix }}"
+  general_option_status_endpoint:
+    variable: "StatusEndpoint"
+    variable_value: "{{ orchestrator_status_endpoint }}"
+  general_option_status_simple_health:
+    variable: "StatusSimpleHealth"
+    variable_value: "{{ orchestrator_status_simple_health }}"
+  general_option_skip_maxscale_check:
+    variable: "SkipMaxScaleCheck"
+    variable_value: "{{ orchestrator_skip_maxscale_check }}"
+  general_option_reasonable_maintenance_replication_lag_seconds:
+    variable: "ReasonableMaintenanceReplicationLagSeconds"
+    variable_value: "{{ orchestrator_reasonable_maintenance_replication_lag_seconds }}"
+  general_option_mysql_connect_timeout_seconds:
+    variable: "MySQLConnectTimeoutSeconds"
+    variable_value: "{{ orchestrator_mysql_connect_timeout_seconds }}"
+
+orchestrator_database_options:
+  database_option_mysql_orchestrator_host:
+    variable: "MySQLOrchestratorHost"
+    variable_value: "{{ orchestrator_mysql_orchestrator_host }}"
+  database_option_mysql_orchestrator_port:
+    variable: "MySQLOrchestratorPort"
+    variable_value: "{{ orchestrator_mysql_orchestrator_port }}"
+  database_option_mysql_orchestrator_database:
+    variable: "MySQLOrchestratorDatabase"
+    variable_value: "{{ orchestrator_mysql_orchestrator_database }}"
+  database_option_skip_orchestrator_database_update:
+    variable: "SkipOrchestratorDatabaseUpdate"
+    variable_value: "{{ orchestrator_skip_orchestrator_database_update }}"
+  database_option_panic_if_different_database_deploy:
+    variable: "PanicIfDifferentDatabaseDeploy"
+    variable_value: "{{ orchestrator_panic_if_different_database_deploy }}"
+  database_option_mysql_read_timeout_seconds:
+    variable: "MySQLReadTimeoutSeconds"
+    variable_value: "{{ orchestrator_mysql_read_timeout_seconds }}"
+
+orchestrator_sd_options:
+  sd_option_instance_poll_seconds:
+    variable: "InstancePollSeconds"
+    variable_value: "{{ orchestrator_instance_poll_seconds }}"
+  sd_option_discover_by_show_slave_hosts:
+    variable: "DiscoverByShowSlaveHosts"
+    variable_value: "{{ orchestrator_discover_by_show_slave_hosts }}"
+  sd_option_hostname_resolve_method:
+    variable: "HostnameResolveMethod"
+    variable_value: "{{ orchestrator_hostname_resolve_method }}"
+  sd_option_mysql_hostname_resolve_method:
+    variable: "MySQLHostnameResolveMethod"
+    variable_value: "{{ orchestrator_mysql_hostname_resolve_method }}"
+  sd_option_default_instance_port:
+    variable: "DefaultInstancePort"
+    variable_value: "{{ orchestrator_default_instance_port }}"
+  sd_option_reject_hostname_resolve_pattern:
+    variable: "RejectHostnameResolvePattern"
+    variable_value: "{{ orchestrator_reject_hostname_resolve_pattern }}"
+  sd_option_detect_cluster_alias_query:
+    variable: "DetectClusterAliasQuery"
+    variable_value: "{{ orchestrator_detect_cluster_alias_query }}"
+  sd_option_detect_cluster_domain_query:
+    variable: "DetectClusterDomainQuery"
+    variable_value: "{{ orchestrator_detect_cluster_domain_query }}"
+  sd_option_datacenter_pattern:
+    variable: "DatacenterPattern"
+    variable_value: "{{ orchestrator_datacenter_pattern }}"
+  sd_option_detect_datacenter_query:
+    variable: "DetectDatacenterQuery"
+    variable_value: "{{ orchestrator_detect_datacenter_query }}"
+  sd_option_physical_environment_pattern:
+    variable: "PhysicalEnvironmentPattern"
+    variable_value: "{{ orchestrator_physical_environment_pattern }}"
+  sd_option_detect_physical_environment_query:
+    variable: "DetectPhysicalEnvironmentQuery"
+    variable_value: "{{ orchestrator_detect_physical_environment_query }}"
+  sd_option_unseen_instance_forget_hours:
+    variable: "UnseenInstanceForgetHours"
+    variable_value: "{{ orchestrator_unseen_instance_forget_hours }}"
+  sd_option_mysql_discovery_read_timeout_seconds:
+    variable: "MySQLDiscoveryReadTimeoutSeconds"
+    variable_value: "{{ orchestrator_mysql_discovery_read_timeout_seconds }}"
+
+orchestrator_topology_options:
+  topology_option_detect_semi_sync_enforced_query:
+    variable: "DetectSemiSyncEnforcedQuery"
+    variable_value: "{{ orchestrator_detect_semi_sync_enforced_query }}"
+  topology_option_replication_lag_query:
+    variable: "ReplicationLagQuery"
+    variable_value: "{{ orchestrator_replication_lag_query }}"
+  topology_option_reasonable_replication_lag_seconds:
+    variable: "ReasonableReplicationLagSeconds"
+    variable_value: "{{ orchestrator_reasonable_replication_lag_seconds }}"
+  topology_option_mysql_topology_read_timeout_seconds:
+    variable: "MySQLTopologyReadTimeoutSeconds"
+    variable_value: "{{ orchestrator_mysql_topology_read_timeout_seconds }}"
+
+orchestrator_pseudogtid_options:
+  pseudogtid_option_pseudo_gtid_pattern:
+    variable: "PseudoGTIDPattern"
+    variable_value: "{{ orchestrator_pseudo_gtid_pattern }}"
+  pseudogtid_option_pseudo_gtid_pattern_is_fixed_substring:
+    variable: "PseudoGTIDPatternIsFixedSubstring"
+    variable_value: "{{ orchestrator_pseudo_gtid_pattern_is_fixed_substring }}"
+  pseudogtid_option_pseudo_gtid_monotonic_hint:
+    variable: "PseudoGTIDMonotonicHint"
+    variable_value: "{{ orchestrator_pseudo_gtid_monotonic_hint }}"
+  pseudogtid_option_detect_pseudo_gtid_query:
+    variable: "DetectPseudoGTIDQuery"
+    variable_value: "{{ orchestrator_detect_pseudo_gtid_query }}"
+
+orchestrator_recovery_options:
+  recovery_option_recovery_poll_seconds:
+    variable: "RecoveryPollSeconds"
+    variable_value: "{{ orchestrator_recovery_poll_seconds }}"
+  recovery_option_failure_detection_period_block_minutes:
+    variable: "FailureDetectionPeriodBlockMinutes"
+    variable_value: "{{ orchestrator_failure_detection_period_block_minutes }}"
+  recovery_option_recovery_period_block_seconds:
+    variable: "RecoveryPeriodBlockSeconds"
+    variable_value: "{{ orchestrator_recovery_period_block_seconds }}"
+  recovery_option_recovery_ignore_hostname_filters:
+    variable: "RecoveryIgnoreHostnameFilters"
+    variable_value: "{{ orchestrator_recovery_ignore_hostname_filters }}"
+  recovery_option_recover_master_cluster_filters:
+    variable: "RecoverMasterClusterFilters"
+    variable_value: "{{ orchestrator_recover_master_cluster_filters }}"
+  recovery_option_recover_intermediate_master_cluster_filters:
+    variable: "RecoverIntermediateMasterClusterFilters"
+    variable_value: "{{ orchestrator_recover_intermediate_master_cluster_filters }}"
+  recovery_option_apply_mysql_promotion_after_master_failover:
+    variable: "ApplyMySQLPromotionAfterMasterFailover"
+    variable_value: "{{ orchestrator_apply_mysql_promotion_after_master_failover }}"
+  recovery_option_master_failover_lost_instances_downtime_minutes:
+    variable: "MasterFailoverLostInstancesDowntimeMinutes"
+    variable_value: "{{ orchestrator_master_failover_lost_instances_downtime_minutes }}"
+  recovery_option_fail_master_promotion_if_sql_thread_not_up_to_date:
+    variable: "FailMasterPromotionIfSQLThreadNotUpToDate"
+    variable_value: "{{ orchestrator_fail_master_promotion_if_sql_thread_not_up_to_date }}"
+  recovery_option_detach_lost_replicas_after_master_failover:
+    variable: "DetachLostReplicasAfterMasterFailover"
+    variable_value: "{{ orchestrator_detach_lost_replicas_after_master_failover }}"
+
+orchestrator_recovery_hooks:
+  recovery_hook_on_failure_detection_processes:
+    variable: "OnFailureDetectionProcesses"
+    variable_value: "{{ orchestrator_on_failure_detection_processes }}"
+  recovery_hook_prefailover_processes:
+    variable: "PreFailoverProcesses"
+    variable_value: "{{ orchestrator_prefailover_processes }}"
+  recovery_hook_postfailover_processes:
+    variable: "PostFailoverProcesses"
+    variable_value: "{{ orchestrator_postfailover_processes }}"
+  recovery_hook_post_unsuccessful_failover_processes:
+    variable: "PostUnsuccessfulFailoverProcesses"
+    variable_value: "{{ orchestrator_post_unsuccessful_failover_processes }}"
+  recovery_hook_post_master_failover_processes:
+    variable: "PostMasterFailoverProcesses"
+    variable_value: "{{ orchestrator_post_master_failover_processes }}"
+  recovery_hook_intermediate_master_failover_processes:
+    variable: "IntermediateMasterFailoverProcesses"
+    variable_value: "{{ orchestrator_intermediate_master_failover_processes }}"
+
+orchestrator_security_options:
+  security_option_read_only:
+    variable: "ReadOnly"
+    variable_value: "{{ orchestrator_read_only }}"
+  security_option_authentication_method:
+    variable: "AuthenticationMethod"
+    variable_value: "{{ orchestrator_authentication_method }}"
+  security_option_http_auth_user:
+    variable: "HTTPAuthUser"
+    variable_value: "{{ orchestrator_http_auth_user }}"
+  security_option_http_auth_password:
+    variable: "HTTPAuthPassword"
+    variable_value: "{{ orchestrator_http_auth_password }}"
+  security_option_auth_user_header:
+    variable: "AuthUserHeader"
+    variable_value: "{{ orchestrator_auth_user_header }}"
+  security_option_power_auth_users:
+    variable: "PowerAuthUsers"
+    variable_value: "{{ orchestrator_power_auth_users }}"
+
+orchestrator_server_security_options:
+  server_security_option_use_ssl:
+    variable: "UseSSL"
+    variable_value: "{{ orchestrator_use_ssl }}"
+  server_security_option_use_mutual_tls:
+    variable: "UseMutualTLS"
+    variable_value: "{{ orchestrator_use_mutual_tls }}"
+  server_security_option_ssl_skip_verify:
+    variable: "SSLSkipVerify"
+    variable_value: "{{ orchestrator_ssl_skip_verify }}"
+  server_security_option_ssl_private_key_file:
+    variable: "SSLPrivateKeyFile"
+    variable_value: "{{ orchestrator_ssl_private_key_file }}"
+  server_security_option_ssl_cert_file:
+    variable: "SSLCertFile"
+    variable_value: "{{ orchestrator_ssl_cert_file }}"
+  server_security_option_ssl_ca_file:
+    variable: "SSLCAFile"
+    variable_value: "{{ orchestrator_ssl_ca_file }}"
+
+orchestrator_topology_security_options:
+  topology_security_option_mysql_topology_credentials_config_file:
+    variable: "MySQLTopologyCredentialsConfigFile"
+    variable_value: "{{ orchestrator_mysql_topology_credentials_config_file }}"
+  topology_security_option_mysql_topology_use_mutual_tls:
+    variable: "MySQLTopologyUseMutualTLS"
+    variable_value: "{{ orchestrator_mysql_topology_use_mutual_tls }}"
+  topology_security_option_mysql_topology_ssl_skip_verify:
+    variable: "MySQLTopologySSLSkipVerify"
+    variable_value: "{{ orchestrator_mysql_topology_ssl_skip_verify }}"
+  topology_security_option_mysql_topology_ssl_private_key_file:
+    variable: "MySQLTopologySSLPrivateKeyFile"
+    variable_value: "{{ orchestrator_mysql_topology_ssl_private_key_file }}"
+  topology_security_option_mysql_topology_ssl_cert_file:
+    variable: "MySQLTopologySSLCertFile"
+    variable_value: "{{ orchestrator_mysql_topology_ssl_cert_file }}"
+  topology_security_option_mysql_topology_ssl_ca_file:
+    variable: "MySQLTopologySSLCAFile"
+    variable_value: "{{ orchestrator_mysql_topology_ssl_ca_file }}"
+
+orchestrator_db_security_options:
+  orchestrator_db_security_option_mysql_orchestrator_credentials_config_file:
+    variable: "MySQLOrchestratorCredentialsConfigFile"
+    variable_value: "{{ orchestrator_mysql_orchestrator_credentials_config_file }}"
+  orchestrator_db_security_option_mysql_orchestrator_use_mutual_tls:
+    variable: "MySQLOrchestratorUseMutualTLS"
+    variable_value: "{{ orchestrator_mysql_orchestrator_use_mutual_tls }}"
+  orchestrator_db_security_option_mysql_orchestrator_ssl_skip_verify:
+    variable: "MySQLOrchestratorSSLSkipVerify"
+    variable_value: "{{ orchestrator_mysql_orchestrator_ssl_skip_verify }}"
+  orchestrator_db_security_option_mysql_orchestrator_ssl_private_key_file:
+    variable: "MySQLOrchestratorSSLPrivateKeyFile"
+    variable_value: "{{ orchestrator_mysql_orchestrator_ssl_private_key_file }}"
+  orchestrator_db_security_option_mysql_orchestrator_ssl_cert_file:
+    variable: "MySQLOrchestratorSSLCertFile"
+    variable_value: "{{ orchestrator_mysql_orchestrator_ssl_cert_file }}"
+  orchestrator_db_security_option_mysql_orchestrator_ssl_ca_file:
+    variable: "MySQLOrchestratorSSLCAFile"
+    variable_value: "{{ orchestrator_mysql_orchestrator_ssl_ca_file }}"
+
+orchestrator_logging_options:
+  logging_option_enable_syslog:
+    variable: "EnableSyslog"
+    variable_value: "{{ orchestrator_enable_syslog }}"
+  logging_option_audit_log_file:
+    variable: "AuditLogFile"
+    variable_value: "{{ orchestrator_audit_log_file }}"
+  logging_option_audit_to_syslog:
+    variable: "AuditToSyslog"
+    variable_value: "{{ orchestrator_audit_to_syslog }}"

@@ -1,0 +1,47 @@
+---
+- name: orchestrator | config | create database
+  mysql_db:
+    name: "{{ orchestrator_mysql_orchestrator_database }}"
+    state: present
+
+- name: orchestrator | config | create the orchestrator backend mysql user
+  mysql_user:
+    name: "{{ orchestrator_mysql_user }}"
+    password: "{{ orchestrator_mysql_password }}"
+    host: "{{ orchestrator_mysql_orchestrator_host }}"
+    priv: "{{ orchestrator_mysql_orchestrator_database }}.*:ALL"
+    state: present
+
+- name: orchestrator | config | copy orchestrator config
+  template:
+    src: orchestrator.conf.json.j2
+    dest: /etc/orchestrator.conf.json
+    owner: "{{ orchestrator_user }}"
+    group: "{{ orchestrator_group }}"
+    mode: 0640
+  notify:
+    - restart orchestrator
+
+- name: orchestrator | config | copy orchestrator backend credentials
+  template:
+    src: orchestrator-backend.cnf.j2
+    dest: /etc/mysql/orchestrator-backend.cnf
+    owner: "{{ orchestrator_user }}"
+    group: "{{ orchestrator_group }}"
+    mode: 0640
+
+- name: orchestrator | config | copy mysql topology credentials
+  template:
+    src: orchestrator-topology.cnf.j2
+    dest: /etc/mysql/orchestrator-topology.cnf
+    owner: "{{ orchestrator_user }}"
+    group: "{{ orchestrator_group }}"
+    mode: 0640
+
+- name: orchestrator | config | enable and start orchestrator
+  service:
+    name: orchestrator
+    state: "{{ orchestrator_service_state }}"
+    enabled: yes
+#  become: true
+#  become_user: orchestrator

@@ -1,0 +1,5 @@
+---
+- name: restart orchestrator
+  service:
+    name: orchestrator
+    state: restarted

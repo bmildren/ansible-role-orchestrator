@@ -1,0 +1,16 @@
+---
+- block:
+  - block:
+    - include: setvars.yml
+    - include: users.yml
+    - include: dir.yml
+    - include: install.yml
+    - include: config_server.yml
+    when: orchestrator_is_server
+
+  - block:
+    - include: config_client.yml
+    when: "not orchestrator_is_server and 'mysql_follower' not in group_names"
+
+  tags:
+    - orchestrator

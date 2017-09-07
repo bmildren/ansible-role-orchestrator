@@ -1,0 +1,12 @@
+---
+- name: orchestrator | dir | create and manage orchestrator directories
+  file:
+    path: "{{ item }}"
+    group: "{{ orchestrator_group }}"
+    owner: "{{ orchestrator_user }}"
+    mode: 0750
+    state: directory
+  with_items:
+    - "{{ orchestrator_home_dir }}"
+    - "{{ orchestrator_install_dir }}"
+  when: not orchestrator_install_via_packagecloud

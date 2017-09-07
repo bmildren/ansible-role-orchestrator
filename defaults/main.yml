@@ -1,0 +1,126 @@
+---
+### Orchestrator Installation
+orchestrator_create_image: "{{ global_create_image | default(false) }}"
+orchestrator_download_src: https://github.com/github/orchestrator/releases/download
+orchestrator_version: 2.1.4
+orchestrator_install_via_packagecloud: false
+orchestrator_upgrade_if_older_version: false
+orchestrator_is_server: true
+
+orchestrator_home_dir: /opt/orchestrator
+orchestrator_user: orchestrator
+orchestrator_group: orchestrator
+
+orchestrator_mysql_compatible_version: 5.6
+orchestrator_mysql_user: orc_server_user
+orchestrator_mysql_password: orc_server_password
+orchestrator_mysql_topology_user: orc_client_user
+orchestrator_mysql_topology_password: orc_client_password
+orchestrator_mysql_topology_privs: "*.*:SUPER,PROCESS,REPLICATION SLAVE,RELOAD/mysql.slave_master_info:SELECT/meta.*:SELECT"
+orchestrator_meta_db: "{{ percona_mysql_meta_db | default('meta') }}"
+orchestrator_cluster_name: "{{ inventory_dir | basename }}"
+orchestrator_cluster_domain: internal
+
+### Orchestrator General Options
+orchestrator_debug: false
+orchestrator_listen_address: :3001
+orchestrator_listen_socket:
+orchestrator_url_prefix: "/orchestrator"
+orchestrator_status_endpoint: "/api/status"
+orchestrator_status_simple_health: true
+orchestrator_skip_maxscale_check: true
+orchestrator_reasonable_maintenance_replication_lag_seconds: 20
+orchestrator_mysql_connect_timeout_seconds: 2
+
+### Orchestrator Database Options
+orchestrator_mysql_orchestrator_host: 127.0.0.1
+orchestrator_mysql_orchestrator_port: 3306
+orchestrator_mysql_orchestrator_database: orchestrator
+orchestrator_skip_orchestrator_database_update: false
+orchestrator_panic_if_different_database_deploy: false
+orchestrator_mysql_read_timeout_seconds: 30
+
+### Orchestrator Service Discovery Options
+orchestrator_instance_poll_seconds: 5
+orchestrator_discover_by_show_slave_hosts: false
+orchestrator_hostname_resolve_method: none
+orchestrator_mysql_hostname_resolve_method: none
+orchestrator_default_instance_port: 3306
+orchestrator_reject_hostname_resolve_pattern:
+orchestrator_detect_cluster_alias_query: "select ifnull(max(cluster_name), '') as cluster_alias from meta.cluster where anchor = 1"
+orchestrator_detect_cluster_domain_query: "select ifnull(max(cluster_domain), '') as cluster_domain from meta.cluster where anchor = 1"
+orchestrator_datacenter_pattern: ""
+orchestrator_detect_datacenter_query: "select substring_index(substring_index(@@hostname, '.', 2), '.', -1) as dc"
+orchestrator_physical_environment_pattern: ""
+orchestrator_detect_physical_environment_query:
+orchestrator_unseen_instance_forget_hours: 240
+orchestrator_mysql_discovery_read_timeout_seconds: 10
+
+### Orchestrator MySQL Topology Options
+orchestrator_detect_semi_sync_enforced_query:
+orchestrator_replication_lag_query: "select absolute_lag from meta.heartbeat_view"
+orchestrator_reasonable_replication_lag_seconds: 10
+orchestrator_mysql_topology_read_timeout_seconds: 600
+
+### Orchestrator Pseudo GTID Options
+orchestrator_pseudo_gtid_pattern: "DROP VIEW IF EXISTS `meta`.`_pseudo_gtid_hint__asc:.*"
+orchestrator_pseudo_gtid_pattern_is_fixed_substring: false
+orchestrator_pseudo_gtid_monotonic_hint: "asc:"
+orchestrator_detect_pseudo_gtid_query: "select count(*) as pseudo_gtid_exists from meta.pseudo_gtid_status where anchor = 1 and time_generated > now() - interval 2 hour"
+
+### Orchestrator Recovery Options
+orchestrator_recovery_poll_seconds: 2
+orchestrator_failure_detection_period_block_minutes: 60
+orchestrator_recovery_period_block_seconds: 1800
+orchestrator_recovery_ignore_hostname_filters: []
+orchestrator_recover_master_cluster_filters: []
+orchestrator_recover_intermediate_master_cluster_filters: []
+orchestrator_apply_mysql_promotion_after_master_failover: true
+orchestrator_master_failover_lost_instances_downtime_minutes: 10
+orchestrator_fail_master_promotion_if_sql_thread_not_up_to_date: true
+orchestrator_detach_lost_replicas_after_master_failover: true
+
+### Orchestrator Recovery Hooks
+orchestrator_on_failure_detection_processes: []
+orchestrator_prefailover_processes: []
+orchestrator_postfailover_processes: []
+orchestrator_post_unsuccessful_failover_processes: []
+orchestrator_post_master_failover_processes: []
+orchestrator_intermediate_master_failover_processes: []
+
+### Orchestrator Security Options
+orchestrator_read_only: false
+orchestrator_authentication_method: multi
+orchestrator_http_auth_user: datateam
+orchestrator_http_auth_password: datateampass
+orchestrator_auth_user_header:
+orchestrator_power_auth_users: ["*"]
+
+### Orchestrator Server Security Options
+orchestrator_use_ssl: false
+orchestrator_use_mutual_tls: false
+orchestrator_ssl_skip_verify: false
+orchestrator_ssl_private_key_file:
+orchestrator_ssl_cert_file:
+orchestrator_ssl_ca_file:
+
+### Orchestrator Server -> Client Security Options
+orchestrator_mysql_topology_credentials_config_file: /etc/mysql/orchestrator-topology.cnf
+orchestrator_mysql_topology_use_mutual_tls: false
+orchestrator_mysql_topology_ssl_skip_verify: false
+orchestrator_mysql_topology_ssl_private_key_file:
+orchestrator_mysql_topology_ssl_cert_file:
+orchestrator_mysql_topology_ssl_ca_file:
+
+### Orchestrator Server -> Orchestrator DB Security Options
+orchestrator_mysql_orchestrator_credentials_config_file: /etc/mysql/orchestrator-backend.cnf
+orchestrator_mysql_orchestrator_use_mutual_tls: false
+orchestrator_mysql_orchestrator_ssl_skip_verify: false
+orchestrator_mysql_orchestrator_ssl_private_key_file:
+orchestrator_mysql_orchestrator_ssl_cert_file:
+orchestrator_mysql_orchestrator_ssl_ca_file:
+
+### Orchestrator Logging Options
+orchestrator_enable_syslog: false
+orchestrator_audit_log_file:
+orchestrator_audit_to_syslog: false

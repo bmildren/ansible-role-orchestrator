@@ -1,0 +1,89 @@
+---
+- block:
+  - name: orchestrator | install | add apt signing key for orchestrator
+    apt_key:
+      url: https://packagecloud.io/github/orchestrator/gpgkey
+      id: 0EB21DE1F7B5AB14
+      state: present
+
+  - name: orchestrator | install | add orchestrator repositories
+    apt_repository:
+      repo: "{{ item }}"
+      state: present
+    register: orchestrator_apt_repos
+    with_items:
+      - "{{ orchestrator_repos }}"
+
+  - name: orchestrator | install | update apt cache if repo changed
+    apt:
+      update_cache: yes
+    register: orchestrator_apt_cache
+    when: orchestrator_apt_repos.changed
+
+  - name: orchestrator | install | update apt cache if old
+    apt:
+      update_cache: yes
+      cache_valid_time: 14400
+    changed_when: False
+    when: not orchestrator_apt_cache.changed
+
+  - name: orchestrator | install | install orchestrator packages
+    apt:
+      name: "{{ item }}"
+      state: "{{ orchestrator_install_state|default('present') }}"
+    environment:
+      DEBIAN_FRONTEND: noninteractive
+    with_items:
+      - "{{ orchestrator_packages }}"
+
+  when: orchestrator_install_via_packagecloud
+
+- block:
+  - name: orchestrator | install | force download
+    file:
+      path: "{{ orchestrator_installed_file }}"
+      state: absent
+    when: orchestrator_upgrade_if_older_version
+
+  - name: orchestrator | install | download and unpack orchestrator
+    unarchive:
+      remote_src: yes
+      extra_opts: ['--strip-components=1', '--show-stored-names']
+      src: "{{ orchestrator_src }}"
+      dest: "{{ orchestrator_install_dir }}"
+      group: "{{ orchestrator_group }}"
+      owner: "{{ orchestrator_user }}"
+      creates: "{{ orchestrator_installed_file }}"
+    register: mysqld_exporter_tarball
+
+  - name: orchestrator | install | create installed file
+    file:
+      path: "{{ orchestrator_installed_file }}"
+      state: touch
+    when: mysqld_exporter_tarball.changed
+
+  - name: orchestrator | install | create symlink
+    file:
+      src: "{{ orchestrator_install_dir }}/usr/local/orchestrator"
+      dest: "/usr/local/orchestrator"
+      group: "{{ orchestrator_group }}"
+      owner: "{{ orchestrator_user }}"
+      state: link
+
+  - name: orchestrator | install | create symlink
+    file:
+      src: "{{ orchestrator_install_dir }}/usr/local/orchestrator/orchestrator"
+      dest: "/usr/local/bin/orchestrator"
+      group: "{{ orchestrator_group }}"
+      owner: "{{ orchestrator_user }}"
+      state: link
+
+  - name: orchestrator | install | create symlink to service
+    file:
+      src: "{{ orchestrator_install_dir }}/etc/init.d/orchestrator"
+      dest: "/etc/init.d/orchestrator"
+      group: "{{ orchestrator_group }}"
+      owner: "{{ orchestrator_user }}"
+      state: link
+
+  when: not orchestrator_install_via_packagecloud

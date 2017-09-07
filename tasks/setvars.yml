@@ -1,0 +1,14 @@
+---
+- name: orchestrator | setvars | ensure service is stopped for imaging
+  set_fact:
+    orchestrator_service_state: "{{ orchestrator_create_image | ternary('stopped', 'started') }}"
+
+- name: orchestrator | setvars | check if we'd want to upgrade
+  set_fact:
+    orchestrator_install_state: 'latest'
+  when: orchestrator_upgrade_if_older_version
+
+- name: orchestrator | setvars | override orchestrator client privs if version < 5.6
+  set_fact:
+    orchestrator_mysql_topology_privs: "*.*:SUPER,PROCESS,REPLICATION SLAVE,RELOAD/meta.*:SELECT"
+  when: orchestrator_mysql_compatible_version | replace(".","") | int < 56

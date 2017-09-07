@@ -1,0 +1,102 @@
+CREATE TABLE IF NOT EXISTS cluster (
+  anchor TINYINT NOT NULL,
+  cluster_name VARCHAR(128) CHARSET ascii NOT NULL DEFAULT '',
+  cluster_domain VARCHAR(128) CHARSET ascii NOT NULL DEFAULT '',
+  PRIMARY KEY (anchor)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO cluster (anchor,
+                     cluster_name,
+                     cluster_domain)
+VALUES (1,
+        "{{ orchestrator_cluster_name }}",
+        "{{ orchestrator_cluster_domain }}")
+ON DUPLICATE KEY UPDATE
+  cluster_name = VALUES(cluster_name),
+  cluster_domain = VALUES(cluster_domain);
+
+CREATE TABLE IF NOT EXISTS pseudo_gtid_status (
+  anchor                      TINYINT NOT NULL,
+  originating_mysql_host      VARCHAR(128) CHARSET ascii NOT NULL,
+  originating_mysql_port      INT UNSIGNED NOT NULL,
+  originating_server_id       INT UNSIGNED NOT NULL,
+  time_generated              TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  pseudo_gtid_uri             VARCHAR(255) CHARSET ascii NOT NULL,
+  pseudo_gtid_hint            VARCHAR(255) CHARSET ascii NOT NULL,
+  PRIMARY KEY (anchor)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP EVENT IF EXISTS create_pseudo_gtid_event;
+DELIMITER $$
+CREATE EVENT IF NOT EXISTS
+create_pseudo_gtid_event
+ON SCHEDULE EVERY 5 SECOND STARTS current_timestamp
+ON COMPLETION PRESERVE
+ENABLE
+DO
+    main: BEGIN
+    DECLARE lock_result INT;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION BEGIN END;
+
+    IF @@global.read_only = 1 THEN
+        LEAVE main;
+    END IF;
+
+    SET lock_result = GET_LOCK('pseudo_gtid_status', 0);
+    IF lock_result = 1 THEN
+        SET @connection_id := CONNECTION_ID();
+        SET @now := NOW();
+        SET @rand := FLOOR(RAND()*(1 << 32));
+        SET @pseudo_gtid_hint := CONCAT_WS(':', LPAD(HEX(UNIX_TIMESTAMP(@now)), 8, '0'), LPAD(HEX(@connection_id), 16, '0'), LPAD(HEX(@rand), 8, '0'));
+        SET @_create_statement := CONCAT('DROP ', 'VIEW IF EXISTS `meta`.`_pseudo_gtid_', 'hint__asc:', @pseudo_gtid_hint, '`');
+        PREPARE st FROM @_create_statement;
+        EXECUTE st;
+        DEALLOCATE PREPARE st;
+
+        /*!50600
+        SET innodb_lock_wait_timeout = 1;
+         */
+        SET @serverid := @@server_id;
+        SET @hostname := @@hostname;
+        SET @port := @@port;
+        SET @pseudo_gtid := CONCAT('pseudo-gtid://', @hostname, ':', @port, '/', @serverid, '/', DATE(@now), '/', TIME(@now), '/', @rand);
+        INSERT INTO pseudo_gtid_status (
+            anchor,
+            originating_mysql_host,
+            originating_mysql_port,
+            originating_server_id,
+            time_generated,
+            pseudo_gtid_uri,
+            pseudo_gtid_hint
+        )
+        VALUES (1, @hostname, @port, @serverid, @now, @pseudo_gtid, @pseudo_gtid_hint)
+        ON DUPLICATE KEY UPDATE
+        originating_mysql_host = VALUES(originating_mysql_host),
+        originating_mysql_port = VALUES(originating_mysql_port),
+        originating_server_id = VALUES(originating_server_id),
+        time_generated = VALUES(time_generated),
+        pseudo_gtid_uri = VALUES(pseudo_gtid_uri),
+        pseudo_gtid_hint = VALUES(pseudo_gtid_hint)
+        ;
+        SET lock_result = RELEASE_LOCK('pseudo_gtid_status');
+    END IF;
+    END main
+    $$
+
+DELIMITER ;
+
+SET GLOBAL event_scheduler := 1;
+
+DROP VIEW IF EXISTS heartbeat_view;
+CREATE SQL SECURITY INVOKER VIEW heartbeat_view AS
+SELECT `heartbeat`.`server_id` AS `originating_server_id`,
+       `heartbeat`.`ts` AS `master_ts`,
+       NOW() AS `time_now`,
+       TIMESTAMPDIFF(SECOND,`heartbeat`.`ts`,NOW()) AS `absolute_lag`
+FROM `heartbeat`
+UNION ALL
+SELECT NULL AS `NULL`,
+       NULL AS `NULL`,
+       NOW() AS `now()`,
+       NULL AS `NULL`
+ORDER BY `master_ts` DESC LIMIT 1;

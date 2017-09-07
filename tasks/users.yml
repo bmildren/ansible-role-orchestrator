@@ -1,0 +1,15 @@
+- name: orchestrator | users | create group for orchestrator
+  group:
+    name: "{{ orchestrator_group }}"
+    system: yes
+    state: present
+
+- name: orchestrator | users | create user for orchestrator
+  user:
+    name: "{{ orchestrator_user }}"
+    system: yes
+    group: "{{ orchestrator_group }}"
+    comment: "Orchestrator Service"
+    home: /dev/null
+    shell: /usr/sbin/nologin
+    state: present

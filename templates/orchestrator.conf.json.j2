@@ -1,0 +1,113 @@
+{
+  "#": "-----",
+  "#": "Orchestrator General Options",
+  "#": "-----",
+  {% for config_item in orchestrator_general_options|dictsort(false, 'value') -%}
+      {{ config_item[1].variable | to_json }}: {% if config_item[1].variable_value is not none -%}
+                                                   {{ config_item[1].variable_value | to_json }}
+                                               {%- else -%}
+                                                   ""
+                                               {%- endif -%},
+  {% endfor -%}
+  "#": "-----",
+  "#": "Orchestrator Database Options",
+  "#": "-----",
+  {% for config_item in orchestrator_database_options|dictsort(false, 'value') -%}
+      {{ config_item[1].variable | to_json }}: {% if config_item[1].variable_value is not none -%}
+                                                   {{ config_item[1].variable_value | to_json }}
+                                               {%- else -%}
+                                                   ""
+                                               {%- endif -%},
+  {% endfor -%}
+  "#": "-----",
+  "#": "Orchestrator Service Discovery Options",
+  "#": "-----",
+  {% for config_item in orchestrator_sd_options|dictsort(false, 'value') -%}
+      {{ config_item[1].variable | to_json }}: {% if config_item[1].variable_value is not none -%}
+                                                   {{ config_item[1].variable_value | to_json }}
+                                               {%- else -%}
+                                                   ""
+                                               {%- endif -%},
+  {% endfor -%}
+  "#": "-----",
+  "#": "Orchestrator MySQL Topology Options",
+  "#": "-----",
+  {% for config_item in orchestrator_topology_options|dictsort(false, 'value') -%}
+      {{ config_item[1].variable | to_json }}: {% if config_item[1].variable_value is not none -%}
+                                                   {{ config_item[1].variable_value | to_json }}
+                                               {%- else -%}
+                                                   ""
+                                               {%- endif -%},
+  {% endfor -%}
+  "#": "-----",
+  "#": "Orchestrator Pseudo GTID Options",
+  "#": "-----",
+  {% for config_item in orchestrator_pseudogtid_options|dictsort(false, 'value') -%}
+      {{ config_item[1].variable | to_json }}: {% if config_item[1].variable_value is not none -%}
+                                                   {{ config_item[1].variable_value | to_json }}
+                                               {%- else -%}
+                                                   ""
+                                               {%- endif -%},
+  {% endfor -%}
+  "#": "-----",
+  "#": "Orchestrator Recovery Options",
+  "#": "-----",
+  {% for config_item in orchestrator_recovery_options|dictsort(false, 'value') -%}
+      {{ config_item[1].variable | to_json }}: {% if config_item[1].variable_value is not none -%}
+                                                   {{ config_item[1].variable_value | to_json }}
+                                               {%- else -%}
+                                                   ""
+                                               {%- endif -%},
+  {% endfor -%}
+  "#": "-----",
+  "#": "Orchestrator Recovery Hooks",
+  "#": "-----",
+  {% for config_item in orchestrator_recovery_hooks|dictsort(false, 'value') -%}
+      {{ config_item[1].variable | to_json }}: {% if config_item[1].variable_value is not none -%}
+                                                   {{ config_item[1].variable_value | to_json }}
+                                               {%- else -%}
+                                                   ""
+                                               {%- endif -%},
+  {% endfor -%}
+  "#": "-----",
+  "#": "Orchestrator Security Options",
+  "#": "-----",
+  {% for config_item in orchestrator_security_options|dictsort(false, 'value') -%}
+      {{ config_item[1].variable | to_json }}: {% if config_item[1].variable_value is not none -%}
+                                                   {{ config_item[1].variable_value | to_json }}
+                                               {%- else -%}
+                                                   ""
+                                               {%- endif -%},
+  {% endfor -%}
+  "#": "-----",
+  "#": "Orchestrator Server -> Client Security Options",
+  "#": "-----",
+  {% for config_item in orchestrator_topology_security_options|dictsort(false, 'value') -%}
+      {{ config_item[1].variable | to_json }}: {% if config_item[1].variable_value is not none -%}
+                                                   {{ config_item[1].variable_value | to_json }}
+                                               {%- else -%}
+                                                   ""
+                                               {%- endif -%},
+  {% endfor -%}
+  "#": "-----",
+  "#": "Orchestrator Server -> Orchestrator DB Security Options",
+  "#": "-----",
+  {% for config_item in orchestrator_db_security_options|dictsort(false, 'value') -%}
+      {{ config_item[1].variable | to_json }}: {% if config_item[1].variable_value is not none -%}
+                                                   {{ config_item[1].variable_value | to_json }}
+                                               {%- else -%}
+                                                   ""
+                                               {%- endif -%},
+  {% endfor -%}
+  "#": "-----",
+  "#": "Orchestrator Logging Options",
+  "#": "-----",
+  {% for config_item in orchestrator_logging_options|dictsort(false, 'value') -%}
+      {{ config_item[1].variable | to_json }}: {% if config_item[1].variable_value is not none -%}
+                                                   {{ config_item[1].variable_value | to_json }}
+                                               {%- else -%}
+                                                   ""
+                                               {%- endif -%}{{ "," if not loop.last else ""}}
+  {%- endfor %}
+
+}

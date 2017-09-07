@@ -1,0 +1,26 @@
+- name: orchestrator | config | create the orchestrator backend mysql user
+  mysql_user:
+    name: "{{ orchestrator_mysql_topology_user }}"
+    password: "{{ orchestrator_mysql_topology_password }}"
+    host: "%"
+    priv: "{{ orchestrator_mysql_topology_privs }}"
+    state: present
+
+- name: orchestrator | config | create meta db
+  mysql_db:
+    name: "{{ orchestrator_meta_db }}"
+    state: present
+
+- name: orchestrator | config | copy script to create tables
+  template:
+    src: meta_tables.sql.j2
+    dest: /tmp/meta_tables.sql
+    mode: 0640
+  register: create_db
+
+- name: orchestrator | config | populate meta tables
+  mysql_db:
+    name: "{{ orchestrator_meta_db }}"
+    state: import
+    target: /tmp/meta_tables.sql
+  when: create_db.changed
